@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import sems.services.AuthService;
@@ -16,20 +17,16 @@ import sems.services.UserGroup;
 import sems.vo.AjaxResult;
 import sems.vo.UserVo;
 
-@Controller
+//@Controller
 @RequestMapping("/auth")
-public class AuthControl {
-	static Logger log = Logger.getLogger(AuthControl.class);
+public class AuthControl02 {
+	static Logger log = Logger.getLogger(AuthControl02.class);
 	
 	@Autowired
 	AuthService authService;
 	
-	/* 리턴 타입은 JSON으로 출력할 객체이다.
-	 * - 자동으로 JSON 문자열로 변환하려면, 빈 설정파일에
-	 *   JSON 변환 해결사를 등록해야 한다.
-	 */
-	@RequestMapping("/login")
-	public AjaxResult login(
+	@RequestMapping(value="/login", method=RequestMethod.POST)
+	public String login(
 			String email, 
 			String password, 
 			@RequestParam(required=false) String saveEmail,
@@ -39,13 +36,15 @@ public class AuthControl {
 		try {
 				UserVo userVo = authService.getLoginUser(
 							email, password, UserGroup.STUDENT);
-				
-				AjaxResult result = null;
 				if (userVo == null) {
-					result =  new AjaxResult().setStatus("ok").setData("failure");
+					model.addAttribute("result", new AjaxResult()
+											.setStatus("ok")
+											.setData("failure"));
 					
 				} else {
-					result = new AjaxResult().setStatus("ok")	.setData("success");
+					model.addAttribute("result",  new AjaxResult()
+											.setStatus("ok")
+											.setData("success"));
 					session.setAttribute("loginUser", userVo);
 					
 					if (saveEmail.equals("true")) {
@@ -57,14 +56,9 @@ public class AuthControl {
 					}
 				}
 				
-				response.setContentType("text/html;charset=UTF-8");
-				
-				return result;
-				
+				return "auth/ajax/loginResult";
 		} catch (Throwable ex) {
-			return new AjaxResult()
-					.setStatus("error")
-					.setData(ex.getMessage());
+			throw new Error(ex);
 		}
 	}
 	
