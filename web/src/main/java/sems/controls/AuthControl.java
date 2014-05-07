@@ -1,5 +1,4 @@
 package sems.controls;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -49,8 +48,8 @@ public class AuthControl {
 			
 				if (saveEmail != null) {
 					Cookie cookie = new Cookie("loginEmail", email);
-					cookie.setDomain("s20.java48.com"); // 서버 범위
-					cookie.setPath("/web02");					// 하위 폴더 범위
+					cookie.setDomain("localhost"); // 서버 범위
+					cookie.setPath("/web");					// 하위 폴더 범위
 					
 					response.addCookie(cookie);
 				}
